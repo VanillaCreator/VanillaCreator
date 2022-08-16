@@ -1,6 +1,7 @@
 # Vanilla Creator
 ### A minecraft datapack creator
 Note: this project is still in early development
+
 ![code-quality](https://img.shields.io/badge/code_quality-shit_code-green)
 
 ---
