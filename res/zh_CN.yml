@@ -1,0 +1,7 @@
+welcome: 欢迎使用 Vanilla Creator!
+enter_selection: "请选择: "
+invalid_input: 输入错误, 请重试!
+no_project: 没有项目!
+building_project: "正在构建: "
+main_menu: "b. 构建全部项目\n\
+    q. 退出程序"

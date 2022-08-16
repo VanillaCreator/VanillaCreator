@@ -1,0 +1,7 @@
+welcome: Welcome to Vanilla Creator!
+enter_selection: "Enter your selection: "
+invalid_input: Invalid input, please try again!
+no_project: No project!
+building_project: "Building project: "
+main_menu: "b. Build all projects\n\
+    q. Quit"
