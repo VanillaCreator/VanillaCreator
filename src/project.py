@@ -10,8 +10,8 @@ def gen_meta(proj_attr, tmp_dir):
         fs.write(utils.gen_json({"pack": proj_attr}, True))
 
 
-def pack(tmp_dir, proj_dir, proj_name, proj_attr):
-    shutil.make_archive("%s %s" % (utils.join_path(proj_dir, proj_name), proj_attr["version"]), "zip", tmp_dir)
+def pack(tmp_dir, out_dir, proj_name, proj_attr):
+    shutil.make_archive("%s %s" % (utils.join_path(out_dir, proj_name), proj_attr["version"]), "zip", tmp_dir)
     shutil.rmtree(tmp_dir)
 
 
@@ -23,7 +23,7 @@ def build(proj_dir):
     out_dir = utils.join_path(proj_dir, "out")
     func_dir = utils.join_path(tmp_dir, "data", proj_name, "functions")
     utils.smkdir(tmp_dir, True)
-    utils.smkdir((out_dir, func_dir))
+    utils.smap(utils.smkdir, (out_dir, func_dir))
     gen_meta(proj_attr, tmp_dir)
     crafts.gen(proj_name, func_dir, receipes)
-    pack(tmp_dir, proj_dir, proj_name, proj_attr)
+    pack(tmp_dir, out_dir, proj_name, proj_attr)

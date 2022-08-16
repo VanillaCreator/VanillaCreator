@@ -10,16 +10,16 @@ def env_init(ws_dir):
 
 
 def build_projects(ws_dir):
-    project_dirs = os.listdir(ws_dir)
-    if not project_dirs:
+    proj_names = os.listdir(ws_dir)
+    if not proj_names:
         ui.say("no_projects")
     else:
-        for project_dir in project_dirs:
-            project_dir_full = utils.join_path(ws_dir, project_dir)
-            if os.path.isdir(project_dir_full):
+        for proj_name in proj_names:
+            proj_dir = utils.join_path(ws_dir, proj_name)
+            if os.path.isdir(proj_dir):
                 ui.say("building_project", False)
-                print(project_dir)
-                project.build(project_dir_full)
+                print(proj_name)
+                project.build(proj_dir)
 
 
 def main():
