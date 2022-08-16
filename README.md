@@ -4,8 +4,6 @@ Note: this project is still in early development
 
 ![code-quality](https://img.shields.io/badge/code_quality-shit_code-green)
 
----
-
 ## Installation
 1. Clone this repo (or download it as zip then extract)
 2. Open the run.bat (Windows) or run.sh (Linux)
