@@ -4,10 +4,18 @@ Note: this project is still in early development
 
 [![code-quality](https://img.shields.io/badge/code_quality-shit_code-green)](https://shitcode.net)
 
+## Requirements
+- Python 3.x
+- pyyaml
+
 ## Installation
 1. Clone this repo (or download it as zip then extract)
-2. Open the run.bat (Windows) or run.sh (Linux)
-3. Enjoy it
+1. Install all dependencies in [Requirements](#requirements)
+    1. Install python 3
+    2. Install pyyaml withpip
+        > pip install pyyaml
+1. Open the run.bat (Windows) or run.sh (Linux)
+1. Enjoy it
 
 ## Usage
 See docs for details
