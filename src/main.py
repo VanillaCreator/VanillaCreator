@@ -1,12 +1,17 @@
 import os, project, ui, utils, yaml
 
 
-def env_init(ws_dir):
+def config_init():
     config_file = "config.yml"
-    utils.smkdir(ws_dir)
-    if not os.path.exists(config_file):
+    if not (os.path.exists(config_file) and ()utils.read_yaml_file(config_file)):
+        config = {}
+        if ui.menu("set_language", ("e", "c")) == "c":
+            config["lang"] = "zh_CN"
+        else:
+            config["lang"] = "en_US"
+        config["workspace"] = ui.ask("enter_workspace", "./workspace")
         with open(config_file, "w", encoding="utf-8") as fs:
-            yaml.dump({"lang": "en_US"}, fs)
+            yaml.dump(config, fs)
 
 
 def build_projects(ws_dir):
@@ -18,13 +23,13 @@ def build_projects(ws_dir):
             proj_dir = utils.join_path(ws_dir, proj_name)
             if os.path.isdir(proj_dir):
                 ui.say("building_project", False)
-                print(proj_name)
+                print(": " + proj_name)
                 project.build(proj_dir)
 
 
 def main():
     ws_dir = "workspace"
-    env_init(ws_dir)
+    config_init()
     ui.say("welcome")
     i = ui.menu("main_menu", ("b", "q"))
     if i == "b":

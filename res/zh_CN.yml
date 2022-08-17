@@ -1,7 +1,18 @@
 welcome: 欢迎使用 Vanilla Creator!
-enter_selection: "请选择: "
+enter_selection: 请选择
+enter_answer: 请回答
+default: 默认值为
 invalid_input: 输入错误, 请重试!
 no_project: 没有项目!
-building_project: "正在构建: "
-main_menu: "b. 构建全部项目\n\
+building_project: 正在构建
+
+# questions
+enter_workspace: 请输入工作目录位置
+
+# menus
+main_menu: "开始...\n\
+    b. 构建全部项目\n\
     q. 退出程序"
+set_language: "请设置显示语言\n\
+    e. 简化英语\n\
+    c. 简体中文"

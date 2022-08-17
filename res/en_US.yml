@@ -1,7 +1,18 @@
 welcome: Welcome to Vanilla Creator!
-enter_selection: "Enter your selection: "
+enter_selection: Enter your selection
+enter_answer: Enter your answer
+default: Default
 invalid_input: Invalid input, please try again!
 no_project: No project!
-building_project: "Building project: "
-main_menu: "b. Build all projects\n\
+building_project: Building project
+
+# questions
+enter_workspace: Enter your workspace location
+
+# menus
+main_menu: "Start...\n\
+    b. Build all projects\n\
     q. Quit"
+set_language: "Please set a display language\n\
+    e. English(Basic)\n\
+    c. Chinese(Simplified)"
