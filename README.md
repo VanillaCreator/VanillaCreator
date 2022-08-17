@@ -37,6 +37,7 @@ See [docs](docs) for details
 
 ## Contributing
 
-Fork this repo, modify, then pull request
+Simply fork this repo, modify, then pull request (x
 
-Recommend to use Visual Studio Code for developing
+- Recommend to use Visual Studio Code for developing
+- Use yapf for code formating
