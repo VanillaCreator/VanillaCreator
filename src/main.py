@@ -56,7 +56,7 @@ def main() -> int:
     ui.init()
     ui.say("welcome")
     while True:
-        i = ui.menu("main_menu", ("b", "s", "q"))
+        i= ui.menu("main_menu", ("b", "s", "q"))
         if i == "b":
             build_projects(settings["workspace"])
         elif i == "s":
