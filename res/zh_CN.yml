@@ -12,7 +12,11 @@ enter_workspace: 请输入工作目录位置
 # menus
 main_menu: "开始...\n\
     b. 构建全部项目\n\
+    s. 设置\n\
     q. 退出程序"
+change_settings: "设置\n\
+    l. 设置显示语言\n\
+    w. 设置工作目录位置"
 set_language: "请设置显示语言\n\
     e. 简化英语\n\
     c. 简体中文"

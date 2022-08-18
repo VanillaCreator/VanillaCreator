@@ -12,7 +12,11 @@ enter_workspace: Enter your workspace location
 # menus
 main_menu: "Start...\n\
     b. Build all projects\n\
+    s. Settings\n\
     q. Quit"
+change_settings: "Settings\n\
+    l. Set display language\n\
+    w. Set workspace location"
 set_language: "Please set a display language\n\
     e. English(Basic)\n\
     c. Chinese(Simplified)"
