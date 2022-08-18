@@ -13,7 +13,7 @@ def sfirst(obj: object) -> object:
     return obj
 
 
-def smap(func: function, obj: object) -> None:
+def smap(func: object, obj: object) -> None:
     if is_list_like(obj):
         for o in obj:
             func(o)

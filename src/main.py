@@ -2,10 +2,12 @@ import os, project, sys, ui, utils, yaml
 
 
 def set_language(settings: dict) -> None:
+    lang = settings["lang"]
     if ui.menu("set_language", ("e", "c")) == "c":
-        settings["lang"] = "zh_CN"
+        lang = "zh_CN"
     else:
-        settings["lang"] = "en_US"
+        lang = "en_US"
+    ui.init(lang)
 
 
 def set_workspace(settings: dict) -> None:
@@ -27,9 +29,10 @@ def change_settings(settings: str, settings_file: str) -> None:
 
 
 def init_settings(settings_file: str) -> dict:
+    ui.init("en_US")
     settings = {}
     set_language(settings)
-    settings = set_workspace(settings)
+    set_workspace(settings)
     write_settings(settings, settings_file)
     return settings
 
@@ -53,10 +56,10 @@ def main() -> int:
         settings = init_settings(settings_file)
     else:
         settings = utils.read_yaml_file(settings_file)
-    ui.init()
+    ui.init(settings["lang"])
     ui.say("welcome")
     while True:
-        i= ui.menu("main_menu", ("b", "s", "q"))
+        i = ui.menu("main_menu", ("b", "s", "q"))
         if i == "b":
             build_projects(settings["workspace"])
         elif i == "s":

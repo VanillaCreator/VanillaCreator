@@ -30,11 +30,11 @@ def ask(trans_key: str, default: str = None) -> str:
 
 def menu(trans_key: str, sel: str) -> str:
     while True:
+        newline()
         say(trans_key)
         i = input(trans["enter_selection"] + ": ")
         if i in sel:
             break
         else:
             say("invalid_input")
-            newline()
     return i
