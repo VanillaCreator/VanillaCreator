@@ -43,41 +43,41 @@ def replace_item(cmd: str, item: dict) -> str:
     return cmd
 
 
-def replace_xcf_names(cmd: str, project_name: str, craft_name: str) -> str:
-    cmd = cmd.replace("%%PROJECT_NAME_LCF%%", lcf(project_name))
+def replace_xcf_names(cmd: str, ns: str, craft_name: str) -> str:
+    cmd = cmd.replace("%%PROJECT_NAME_LCF%%", lcf(ns))
     cmd = cmd.replace("%%CRAFT_NAME_UCF%%", ucf(craft_name))
     return cmd
 
 
-def cmd_detect_main(project_name: str, craft_name: str, material: dict) -> str:
+def cmd_detect_main(ns: str, craft_name: str, material: dict) -> str:
     cmd = statics.craft_bases["detect"]["main"]
-    cmd = replace_xcf_names(cmd, project_name, craft_name)
+    cmd = replace_xcf_names(cmd, ns, craft_name)
     cmd = replace_item(cmd, material)
     return cmd
 
 
-def cmd_clear_others(project_name: str, craft_name: str, material: dict) -> str:
+def cmd_clear_others(ns: str, craft_name: str, material: dict) -> str:
     cmd = statics.craft_bases["clear_others"]
-    cmd = replace_xcf_names(cmd, project_name, craft_name)
+    cmd = replace_xcf_names(cmd, ns, craft_name)
     cmd = replace_item(cmd, material)
     return cmd
 
 
-def cmd_detect_tag(project_name: str, craft_name: str) -> str:
+def cmd_detect_tag(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["detect"]["tag"]
-    cmd = replace_xcf_names(cmd, project_name, craft_name)
+    cmd = replace_xcf_names(cmd, ns, craft_name)
     return cmd
 
 
-def get_craft_cmd_clear_self(project_name: str, craft_name: str) -> str:
+def get_craft_cmd_clear_self(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["clear_self"]
-    cmd = replace_xcf_names(cmd, project_name, craft_name)
+    cmd = replace_xcf_names(cmd, ns, craft_name)
     return cmd
 
 
-def get_craft_cmd_run_func(project_name: str, craft_name: str) -> str:
+def get_craft_cmd_run_func(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["run_func"]
-    cmd = replace_xcf_names(cmd, project_name, craft_name)
+    cmd = replace_xcf_names(cmd, ns, craft_name)
     cmd = cmd.replace("%%CRAFT_NAME%%", craft_name)
     return cmd
 
@@ -101,11 +101,11 @@ def cmd_detect_block(block: dict) -> str:
     return cmd
 
 
-def write_craft_file(project_name: str, craft_file: str, receipe: dict) -> None:
+def write_craft_file(ns: str, craft_file: str, receipe: dict) -> None:
     with open(craft_file, "w") as fs:
         material_or_s = receipe["material"]
         first_material = utils.sfirst(material_or_s)
-        fs.write(cmd_detect_main(project_name, receipe["name"], first_material))
+        fs.write(cmd_detect_main(ns, receipe["name"], first_material))
         if "block" in receipe:
 
             def func(block: dict) -> None:
@@ -115,12 +115,12 @@ def write_craft_file(project_name: str, craft_file: str, receipe: dict) -> None:
         if utils.is_list_like(material_or_s):
             for material in material_or_s[1:]:
                 fs.write(cmd_detect_others(material))
-        fs.write(cmd_detect_tag(project_name, receipe["name"]))
+        fs.write(cmd_detect_tag(ns, receipe["name"]))
         if utils.is_list_like(material_or_s):
             for material in material_or_s[1:]:
-                fs.write(cmd_clear_others(project_name, receipe["name"], material))
-        fs.write(get_craft_cmd_run_func(project_name, receipe["name"]))
-        fs.write(get_craft_cmd_clear_self(project_name, receipe["name"]))
+                fs.write(cmd_clear_others(ns, receipe["name"], material))
+        fs.write(get_craft_cmd_run_func(ns, receipe["name"]))
+        fs.write(get_craft_cmd_clear_self(ns, receipe["name"]))
 
 
 def write_item_file(item_file: str, receipe: dict) -> None:
@@ -132,22 +132,36 @@ def write_item_file(item_file: str, receipe: dict) -> None:
         utils.smap(func, receipe["product"])
 
 
-def gen(tmp_dir: str, receipes: list) -> None:
-    project_name = os.path.basename(os.path.dirname(tmp_dir))
-    data_dir = utils.join_path(tmp_dir, "data", project_name)
-    func_dir = utils.join_path(data_dir, "functions")
-    func_tags_dir = utils.join_path(data_dir, "tags", "functions")
+def gen_receipe(func_dir: str, ns: str, receipe: dict) -> None:
     func_ext = ".mcfunction"
-    craft_func_file = utils.join_path(func_dir, "craft" + func_ext)
     crafts_dir = utils.join_path(func_dir, "crafts")
     items_dir = utils.join_path(func_dir, "items")
-    utils.smap(utils.smkdir, (func_tags_dir, crafts_dir, items_dir))
-    for receipe in receipes:
-        craft_file = utils.join_path(crafts_dir, receipe["name"] + func_ext)
-        item_file = utils.join_path(items_dir, receipe["name"] + func_ext)
-        write_craft_file(project_name, craft_file, receipe)
-        write_item_file(item_file, receipe)
-        with open(craft_func_file, "a") as fs:
-            fs.write("function %s:crafts/%s" % (project_name, receipe["name"]))
-    with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
-        fs.write(utils.gen_json({"values": "%s:crafts" % (project_name)}, True))
+    utils.smap(utils.smkdir, (crafts_dir, items_dir))
+    craft_file = utils.join_path(crafts_dir, receipe["name"] + func_ext)
+    item_file = utils.join_path(items_dir, receipe["name"] + func_ext)
+    write_craft_file(ns, craft_file, receipe)
+    write_item_file(item_file, receipe)
+    with open(utils.join_path(func_dir, "craft" + func_ext), "a") as fs:
+        fs.write("function %s:crafts/%s" % (ns, receipe["name"]))
+
+
+def gen(tmp_dir: str, receipes: list | dict) -> None:
+    if not type(receipes) is dict:
+        project_name = os.path.basename(os.path.dirname(tmp_dir))
+        receipes = {project_name: receipes}
+    nss = tuple(receipes.keys())
+
+    def func(ns: str) -> None:
+
+        def func2(receipe: dict) -> None:
+            gen_receipe(func_dir, ns, receipe)
+
+        data_dir = utils.join_path(tmp_dir, "data", ns)
+        func_dir = utils.join_path(data_dir, "functions")
+        func_tags_dir = utils.join_path(data_dir, "tags", "functions")
+        utils.smkdir(func_tags_dir)
+        utils.smap(func2, receipes[ns])
+        with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
+            fs.write(utils.gen_json({"values": "%s:crafts" % (ns)}, True))
+
+    utils.smap(func, nss)
