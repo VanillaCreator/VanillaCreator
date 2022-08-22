@@ -16,36 +16,59 @@ def get_block_coordinates(block: dict) -> str:
 
 
 def get_item_count(item: dict) -> str:
-    if type(item) is dict and "count" in item:
+    if "count" in item:
         count = item["count"]
     else:
         count = "1"
+    count += "b"
     return count
 
 
-def get_item_id(item: str | dict) -> str:
-    if type(item) is dict:
-        id = item["id"]
-    else:
-        id = item
-    return id
+# 应对Minecraft奇怪的嵌套json文件
+def gen_item_tag_display_ph(item: dict) -> dict:
+    display = {}
+    if "name" in item:
+        display["Name"] = "%%NAME%%"
+    if "description" in item:
+        display["Lore"] = "%%LORE%%"
+    return display
+
+
+# 快给我螺内酯啊啊啊
+def gen_item_tag_display(cmd: str, item: dict) -> str:
+    if "name" in item:
+        cmd = cmd.replace('"%%NAME%%"', "'%s'" % (utils.gen_json(item["name"])))
+    if "description" in item:
+        cmd = cmd.replace('"%%LORE%%"', "'%s'" % (utils.gen_json(item["description"])))
+    return cmd
+
+
+def gen_item_tag(item: dict) -> dict:
+    tag = {}
+    if "mod_id" in item:
+        tag["id"] = item["mod_id"]
+    tag_display = gen_item_tag_display_ph(item)
+    if tag_display:
+        tag["display"] = tag_display
+    return tag
 
 
 def replace_item(cmd: str, item: dict) -> str:
-    cmd = cmd.replace("%%ID%%", get_item_id(item))
-    cmd = cmd.replace("%%COUNT%%", get_item_count(item))
-    if "mod_id" in item:
-        cmd = cmd.replace("%%MOD_ID%%", item["mod_id"])
-    if "name" in item:
-        cmd = cmd.replace("%%NAME%%", utils.gen_json(item["name"]))
-    if "description" in item:
-        cmd = cmd.replace("%%LORE%%", utils.gen_json(item["description"]))
+    if not type(item) is dict:
+        nbt = {"id": item, "Count": "1b"}
+    else:
+        nbt = {"id": item["id"], "Count": get_item_count(item)}
+        nbt_tag = gen_item_tag(item)
+        if nbt_tag:
+            nbt["tag"] = nbt_tag
+    cmd = cmd.replace("%%ITEM%%", utils.gen_json(nbt))
+    cmd = gen_item_tag_display(cmd, item)
     return cmd
 
 
 def replace_xcf_names(cmd: str, ns: str, craft_name: str) -> str:
-    cmd = cmd.replace("%%PROJECT_NAME_LCF%%", lcf(ns))
-    cmd = cmd.replace("%%CRAFT_NAME_UCF%%", ucf(craft_name))
+    cmd = cmd.replace("%%NS_LCF%%", lcf(ns))
+    cmd = cmd.replace("%%RECEIPE_LCF%%", ucf(craft_name))
     return cmd
 
 
@@ -78,7 +101,7 @@ def get_craft_cmd_clear_self(ns: str, craft_name: str) -> str:
 def get_craft_cmd_run_func(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["run_func"]
     cmd = replace_xcf_names(cmd, ns, craft_name)
-    cmd = cmd.replace("%%CRAFT_NAME%%", craft_name)
+    cmd = cmd.replace("%%RECEIPE%%", craft_name)
     return cmd
 
 
@@ -96,8 +119,8 @@ def get_craft_cmd_gen_item(product: dict) -> str:
 
 def cmd_detect_block(block: dict) -> str:
     cmd = statics.craft_bases["detect"]["block"]
-    cmd = cmd.replace("%%BLOCK_POS%%", get_block_coordinates(block))
-    cmd = cmd.replace("%%BLOCK_ID%%", block["id"])
+    cmd = cmd.replace("%%POS%%", get_block_coordinates(block))
+    cmd = cmd.replace("%%ID%%", block["id"])
     return cmd
 
 
@@ -162,6 +185,6 @@ def gen(tmp_dir: str, receipes: list | dict) -> None:
         utils.smkdir(func_tags_dir)
         utils.smap(func2, receipes[ns])
         with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
-            fs.write(utils.gen_json({"values": "%s:crafts" % (ns)}, True))
+            fs.write(utils.gen_json({"values": "%s:craft" % (ns)}, True))
 
     utils.smap(func, nss)

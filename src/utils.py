@@ -38,6 +38,8 @@ def read_yaml_file(yaml_file: str) -> dict:
 def gen_json(obj: object, pretty: bool = False) -> str:
     if pretty:
         indent = 4
+        separators = (",", ": ")
     else:
         indent = None
-    return json.dumps(obj, ensure_ascii=False, indent=indent)
+        separators = (",", ":")
+    return json.dumps(obj, ensure_ascii=False, indent=indent, separators=separators)
