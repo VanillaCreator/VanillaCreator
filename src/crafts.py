@@ -1,6 +1,6 @@
 import os, statics, utils
 
-block_coordinates = {"in": "~ ~ ~", "on": "~ ~-1 ~", "under": "~ ~1 ~"}
+coords = {"in": "~ ~ ~", "on": "~ ~-1 ~", "under": "~ ~1 ~"}
 
 
 def lcf(text: str) -> str:
@@ -12,7 +12,7 @@ def ucf(text: str) -> str:
 
 
 def get_block_coordinates(block: dict) -> str:
-    return block_coordinates[block["pos"]]
+    return coords[block["pos"]]
 
 
 def get_item_count(item: dict) -> str:
@@ -92,13 +92,13 @@ def cmd_detect_tag(ns: str, craft_name: str) -> str:
     return cmd
 
 
-def get_craft_cmd_clear_self(ns: str, craft_name: str) -> str:
+def cmd_clear_self(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["clear_self"]
     cmd = replace_xcf_names(cmd, ns, craft_name)
     return cmd
 
 
-def get_craft_cmd_run_func(ns: str, craft_name: str) -> str:
+def cmd_run_func(ns: str, craft_name: str) -> str:
     cmd = statics.craft_bases["run_func"]
     cmd = replace_xcf_names(cmd, ns, craft_name)
     cmd = cmd.replace("%%RECEIPE%%", craft_name)
@@ -111,7 +111,7 @@ def cmd_detect_others(material: dict) -> str:
     return cmd
 
 
-def get_craft_cmd_gen_item(product: dict) -> str:
+def cmd_gen_item(product: dict) -> str:
     cmd = statics.craft_bases["gen_item"]
     cmd = replace_item(cmd, product)
     return cmd
@@ -142,15 +142,15 @@ def write_craft_file(ns: str, craft_file: str, receipe: dict) -> None:
         if utils.is_list_like(material_or_s):
             for material in material_or_s[1:]:
                 fs.write(cmd_clear_others(ns, receipe["name"], material))
-        fs.write(get_craft_cmd_run_func(ns, receipe["name"]))
-        fs.write(get_craft_cmd_clear_self(ns, receipe["name"]))
+        fs.write(cmd_run_func(ns, receipe["name"]))
+        fs.write(cmd_clear_self(ns, receipe["name"]))
 
 
 def write_item_file(item_file: str, receipe: dict) -> None:
     with open(item_file, "w") as fs:
 
         def func(product: dict) -> None:
-            fs.write(get_craft_cmd_gen_item(product))
+            fs.write(cmd_gen_item(product))
 
         utils.smap(func, receipe["product"])
 
@@ -168,23 +168,23 @@ def gen_receipe(func_dir: str, ns: str, receipe: dict) -> None:
         fs.write("function %s:crafts/%s" % (ns, receipe["name"]))
 
 
+def gen_per_ns(tmp_dir: str, receipes: list | dict, ns: str) -> None:
+
+    def func(receipe: dict) -> None:
+        gen_receipe(func_dir, ns, receipe)
+
+    data_dir = utils.join_path(tmp_dir, "data", ns)
+    func_dir = utils.join_path(data_dir, "functions")
+    func_tags_dir = utils.join_path(data_dir, "tags", "functions")
+    utils.smkdir(func_tags_dir)
+    utils.smap(func, receipes[ns])
+    with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
+        fs.write(utils.gen_json({"values": "%s:craft" % (ns)}, True))
+
+
 def gen(tmp_dir: str, receipes: list | dict) -> None:
     if not type(receipes) is dict:
         project_name = os.path.basename(os.path.dirname(tmp_dir))
         receipes = {project_name: receipes}
     nss = tuple(receipes.keys())
-
-    def func(ns: str) -> None:
-
-        def func2(receipe: dict) -> None:
-            gen_receipe(func_dir, ns, receipe)
-
-        data_dir = utils.join_path(tmp_dir, "data", ns)
-        func_dir = utils.join_path(data_dir, "functions")
-        func_tags_dir = utils.join_path(data_dir, "tags", "functions")
-        utils.smkdir(func_tags_dir)
-        utils.smap(func2, receipes[ns])
-        with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
-            fs.write(utils.gen_json({"values": "%s:craft" % (ns)}, True))
-
-    utils.smap(func, nss)
+    utils.smap(gen_per_ns, nss)
