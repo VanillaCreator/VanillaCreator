@@ -47,7 +47,8 @@ def build_projects(ws_dir: str) -> None:
             if os.path.isdir(proj_dir):
                 ui.say("building_project", False)
                 print(": " + proj_name)
-                project.build(proj_dir)
+                if project.build(proj_dir) == -1:
+                    ui.say("build_failed")
 
 
 def main() -> int:
@@ -69,4 +70,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        pass

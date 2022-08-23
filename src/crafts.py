@@ -1,6 +1,13 @@
-import os, statics, utils
+import os, statics, ui, utils
 
 coords = {"in": "~ ~ ~", "on": "~ ~-1 ~", "under": "~ ~1 ~"}
+
+
+class TypeException(Exception):
+
+    def __init__(self, trans_key) -> None:
+        super().__init__(trans_key)
+        self.trans_key = trans_key
 
 
 def lcf(text: str) -> str:
@@ -28,6 +35,8 @@ def get_item_count(item: dict) -> str:
 def gen_item_tag_display_ph(item: dict) -> dict:
     display = {}
     if "name" in item:
+        if not (type(item["name"]) is dict or type(item["name"]) is str):
+            raise TypeException("multiline_name")
         display["Name"] = "%%NAME%%"
     if "description" in item:
         display["Lore"] = "%%LORE%%"
@@ -183,8 +192,16 @@ def gen_per_ns(tmp_dir: str, receipes: list | dict, ns: str) -> None:
 
 
 def gen(tmp_dir: str, receipes: list | dict) -> None:
-    if not type(receipes) is dict:
-        project_name = os.path.basename(os.path.dirname(tmp_dir))
-        receipes = {project_name: receipes}
-    nss = tuple(receipes.keys())
-    utils.smap(gen_per_ns, nss)
+
+    def func(ns: str) -> None:
+        gen_per_ns(tmp_dir, receipes, ns)
+
+    try:
+        if not type(receipes) is dict:
+            project_name = os.path.basename(os.path.dirname(tmp_dir))
+            receipes = {project_name: receipes}
+        nss = tuple(receipes.keys())
+        utils.smap(func, nss)
+    except TypeException as e:
+        ui.say(e.trans_key)
+        return -1

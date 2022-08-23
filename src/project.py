@@ -1,4 +1,4 @@
-import crafts, os, shutil, utils
+import crafts, os, shutil, ui, utils
 
 
 def gen_meta(proj_attr, tmp_dir):
@@ -24,5 +24,7 @@ def build(proj_dir):
     utils.smkdir(tmp_dir, True)
     utils.smkdir(out_dir)
     gen_meta(proj_attr, tmp_dir)
-    crafts.gen(tmp_dir, receipes)
+    if crafts.gen(tmp_dir, receipes) == -1:
+        ui.say("gen_crafts_failed")
+        return -1
     pack(tmp_dir, out_dir, proj_name, proj_attr)

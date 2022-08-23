@@ -2,9 +2,14 @@ welcome: Welcome to Vanilla Creator!
 enter_selection: Enter your selection
 enter_answer: Enter your answer
 default: Default
+building_project: Building project
+
+# exceptions
 invalid_input: Invalid input, please try again!
 no_project: No project!
-building_project: Building project
+build_faied: Build failed!
+gen_crafts_failed: Gen receipes failed!
+multiline_name: Name should be only one line!
 
 # questions
 enter_workspace: Enter your workspace location
