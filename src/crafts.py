@@ -22,8 +22,16 @@ def get_block_coordinates(block: dict) -> str:
     return coords[block["pos"]]
 
 
+def get_item_id(item: dict | str) -> str:
+    if type(item) is dict:
+        id = item["id"]
+    else:
+        id = item
+    return id
+
+
 def get_item_count(item: dict) -> str:
-    if "count" in item:
+    if type(item) is dict and "count" in item:
         count = item["count"]
     else:
         count = "1"
@@ -31,47 +39,46 @@ def get_item_count(item: dict) -> str:
     return count
 
 
-# 应对Minecraft奇怪的嵌套json文件
-def gen_item_tag_display_ph(item: dict) -> dict:
-    display = {}
+# Minecraft你要用json就全用json呀
+def gen_item_tag_display(item: dict) -> str:
+    display = ""
     if "name" in item:
         if not (type(item["name"]) is dict or type(item["name"]) is str):
             raise TypeException("multiline_name")
-        display["Name"] = "%%NAME%%"
+        display += "Name:'%s'" % (utils.gen_json(item["name"]))
+    if display:
+        display += ","
     if "description" in item:
-        display["Lore"] = "%%LORE%%"
+        lore = ""
+        lores = utils.smap(utils.gen_json, item["description"])
+        for l in lores:
+            lore += "'%s'," % (l)
+        lore = lore[:-1]
+        display += "Lore:[%s]" % (lore)
     return display
 
 
-# 快给我螺内酯啊啊啊
-def gen_item_tag_display(cmd: str, item: dict) -> str:
-    if "name" in item:
-        cmd = cmd.replace('"%%NAME%%"', "'%s'" % (utils.gen_json(item["name"])))
-    if "description" in item:
-        cmd = cmd.replace('"%%LORE%%"', "'%s'" % (utils.gen_json(item["description"])))
-    return cmd
-
-
-def gen_item_tag(item: dict) -> dict:
-    tag = {}
+# 这种半json的nbt夹杂着json文件是什么鬼
+def gen_item_tag(item: dict) -> str:
+    tag = ""
     if "mod_id" in item:
-        tag["id"] = item["mod_id"]
-    tag_display = gen_item_tag_display_ph(item)
+        tag += "id:\"%s\"" % (item["mod_id"])
+    tag_display = gen_item_tag_display(item)
     if tag_display:
-        tag["display"] = tag_display
+        if tag:
+            tag += ","
+        tag += "display:{%s}" % (tag_display)
     return tag
 
 
+# 快给我螺内酯啊啊啊
 def replace_item(cmd: str, item: dict) -> str:
-    if not type(item) is dict:
-        nbt = {"id": item, "Count": "1b"}
-    else:
-        nbt = {"id": item["id"], "Count": get_item_count(item)}
+    nbt = "{id:\"%s\",Count:%s}" % (get_item_id(item), get_item_count(item))
+    if type(item) is dict:
         nbt_tag = gen_item_tag(item)
         if nbt_tag:
-            nbt["tag"] = nbt_tag
-    cmd = cmd.replace("%%ITEM%%", utils.gen_json(nbt))
-    cmd = gen_item_tag_display(cmd, item)
+            nbt = nbt.replace("}", ",tag:{%s}}" % (nbt_tag))
+    cmd = cmd.replace("%%ITEM%%", nbt)
     return cmd
 
 
