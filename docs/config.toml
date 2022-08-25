@@ -1,0 +1,14 @@
+baseURL = 'https://vanillacreator.plus'
+languageCode = 'en-us'
+title = 'Vanilla Creator'
+theme = 'hugo-book'
+enableGitInfo = true
+disableKinds = ['taxonomy', 'taxonomyTerm']
+
+[params]
+BookTheme = 'auto'
+BookRepo = 'https://github.com/VanillaCreator/VanillaCreator.github.io'
+BookCommitPath = 'commit'
+BookEditPath = 'edit/main'
+BookComments = false
+BookServiceWorker = true
