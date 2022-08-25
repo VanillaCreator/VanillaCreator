@@ -4,30 +4,24 @@
 # 给我螺内酯啊啊啊
 def gen(obj: object) -> str:
     nbt = ""
-    tobj = type(obj)
-    if tobj is str:
+    obj_type = type(obj)
+    if obj_type is str:
         if "," in obj or ":" in obj:
-            obj = "\"" + obj + "\""
+            obj = "\"%s\"" % (obj)
         nbt += obj
-    elif tobj is int:
-        nbt += str(obj) + "b"
-    elif tobj is list:
+    elif obj_type is int:
+        nbt += str(obj)
+    elif obj_type is list:
         nbt += "["
         for obj2 in obj:
             nbt += gen(obj2)
             nbt += ","
         nbt = nbt[:-1] + "]"
-    elif tobj is dict:
+    elif obj_type is dict:
         keys = obj.keys()
         nbt += "{"
         for key in keys:
-            obj2 = obj[key]
-            nbt += key + ":"
-            nbt += gen(obj2)
+            nbt += "%s:%s" % (key, gen(obj[key]))
             nbt += ","
         nbt = nbt[:-1] + "}"
     return nbt
-
-
-test = gen({"a": "b:b", "c": 1, "d": {"e": 2, "f": {"g": "h,i", "j": "k", "l": ["a", "b", 3, {"aaa": "bbb"}]}}})
-print(test)
