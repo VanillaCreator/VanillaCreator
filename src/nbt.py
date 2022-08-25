@@ -1,17 +1,16 @@
-# minecraft你要用json就全用呀
-# 这种奇怪的nbt格式什么鬼
-# 有时还套整个json文件
-# 给我螺内酯啊啊啊
+import utils
+
+
 def gen(obj: object) -> str:
     nbt = ""
     obj_type = type(obj)
     if obj_type is str:
-        if "," in obj or ":" in obj:
+        if (not (obj[0] == "'" and obj[-1] == "'")) and ("," in obj or ":" in obj):
             obj = "\"%s\"" % (obj)
         nbt += obj
     elif obj_type is int:
         nbt += str(obj)
-    elif obj_type is list:
+    elif utils.is_list_like(obj):
         nbt += "["
         for obj2 in obj:
             nbt += gen(obj2)

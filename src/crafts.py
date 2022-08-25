@@ -1,4 +1,4 @@
-import os, statics, ui, utils
+import nbt, os, statics, ui, utils
 
 coords = {"in": "~ ~ ~", "on": "~ ~-1 ~", "under": "~ ~1 ~"}
 
@@ -32,53 +32,46 @@ def get_item_id(item: dict | str) -> str:
 
 def get_item_count(item: dict) -> str:
     if type(item) is dict and "count" in item:
-        count = item["count"]
+        count = str(item["count"])
     else:
         count = "1"
     count += "b"
     return count
 
 
-# Minecraft你要用json就全用json呀
 def gen_item_tag_display(item: dict) -> str:
-    display = ""
+    display = {}
     if "name" in item:
         if not (type(item["name"]) is dict or type(item["name"]) is str):
             raise TypeException("multiline_name")
-        display += "Name:'%s'" % (utils.gen_json(item["name"]))
-    if display:
-        display += ","
+        display["Name"] = "'%s'" % (utils.gen_json(item["name"]))
     if "description" in item:
-        lore = ""
-        lores = utils.smap(utils.gen_json, item["description"])
-        for l in lores:
-            lore += "'%s'," % (l)
-        lore = lore[:-1]
-        display += "Lore:[%s]" % (lore)
+
+        def func(description: object) -> str:
+            return "'%s'" % (utils.gen_json(description))
+
+        lores = utils.smap(func, item["description"])
+        display["Lore"] = lores
     return display
 
 
-# 这种半json的nbt夹杂着json文件是什么鬼
-def gen_item_tag(item: dict) -> str:
-    tag = ""
+def gen_item_tag(item: dict) -> dict:
+    tag = {}
     if "mod_id" in item:
-        tag += "id:\"%s\"" % (item["mod_id"])
+        tag["id"] = item["mod_id"]
     tag_display = gen_item_tag_display(item)
     if tag_display:
-        if tag:
-            tag += ","
-        tag += "display:{%s}" % (tag_display)
+        tag["display"] = tag_display
     return tag
 
 
-# 快给我螺内酯啊啊啊
 def replace_item(cmd: str, item: dict) -> str:
-    nbt = "{id:\"%s\",Count:%s}" % (get_item_id(item), get_item_count(item))
+    item_nbt = {"id": get_item_id(item), "Count": get_item_count(item)}
     if type(item) is dict:
-        nbt_tag = gen_item_tag(item)
-        if nbt_tag:
-            nbt = nbt.replace("}", ",tag:{%s}}" % (nbt_tag))
-    cmd = cmd.replace("%%ITEM%%", nbt)
+        item_nbt_tag = gen_item_tag(item)
+        if item_nbt_tag:
+            item_nbt["tag"] = item_nbt_tag
+    cmd = cmd.replace("%%ITEM%%", nbt.gen(item_nbt))
     return cmd
 
 
@@ -191,11 +184,7 @@ def gen_per_ns(tmp_dir: str, receipes: list | dict, ns: str) -> None:
 
     data_dir = utils.join_path(tmp_dir, "data", ns)
     func_dir = utils.join_path(data_dir, "functions")
-    func_tags_dir = utils.join_path(data_dir, "tags", "functions")
-    utils.smkdir(func_tags_dir)
     utils.smap(func, receipes[ns])
-    with open(utils.join_path(func_tags_dir, "tick.json"), "w") as fs:
-        fs.write(utils.gen_json({"values": "%s:craft" % (ns)}, True))
 
 
 def gen(tmp_dir: str, receipes: list | dict) -> None:
@@ -209,6 +198,13 @@ def gen(tmp_dir: str, receipes: list | dict) -> None:
             receipes = {project_name: receipes}
         nss = tuple(receipes.keys())
         utils.smap(func, nss)
+        craft_funcs = []
+        for ns in nss:
+            craft_funcs.append("%s:craft" % (ns))
+        func_tag_dir = utils.join_path(tmp_dir, "data/minecraft/tags/functions")
+        utils.smkdir(func_tag_dir)
+        with open(utils.join_path(func_tag_dir, "tick.json"), "a") as fs:
+            fs.write(utils.gen_json({"values": craft_funcs}, True))
     except TypeException as e:
         ui.say(e.trans_key)
         return -1
