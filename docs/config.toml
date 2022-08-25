@@ -7,8 +7,8 @@ disableKinds = ['taxonomy', 'taxonomyTerm']
 
 [params]
 BookTheme = 'auto'
-BookRepo = 'https://github.com/VanillaCreator/VanillaCreator.github.io'
+BookRepo = 'https://github.com/VanillaCreator/VanillaCreator'
 BookCommitPath = 'commit'
-BookEditPath = 'edit/main'
+BookEditPath = 'edit/main/docs'
 BookComments = false
 BookServiceWorker = true
