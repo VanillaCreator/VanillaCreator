@@ -6,7 +6,7 @@ on:
       - "**.py"
 
 jobs:
-  format:
+  build:
     name: yapf format
     runs-on: ubuntu-latest
     steps:
