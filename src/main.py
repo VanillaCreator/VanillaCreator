@@ -1,4 +1,6 @@
 import os, project, sys, ui, utils, yaml
+
+
 def set_language(settings: dict) -> None:
     lang = settings["lang"]
     if ui.menu("set_language", ("e", "c")) == "c":
@@ -6,6 +8,8 @@ def set_language(settings: dict) -> None:
     else:
         lang = "en_US"
     ui.init(lang)
+
+
 def set_workspace(settings: dict) -> None:
     settings["workspace"] = ui.ask("enter_workspace", "./workspace")
 
