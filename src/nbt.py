@@ -1,8 +1,6 @@
 import utils
-
-
 def gen(obj: object) -> str:
-    nbt = ""
+    nbt=""
     obj_type = type(obj)
     if obj_type is str:
         if (not (obj[0] == "'" and obj[-1] == "'")) and ("," in obj or ":" in obj):
