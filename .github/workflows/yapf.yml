@@ -3,7 +3,7 @@ name: yapf format
 on:
   push:
     paths:
-      - "./src/**.py"
+      - "src/**.py"
 
 jobs:
   build:
