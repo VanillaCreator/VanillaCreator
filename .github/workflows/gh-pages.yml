@@ -40,7 +40,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./docs/public
           external_repository: VanillaCreator/VanillaCreator.github.io
           publish_branch: main
           force_orphan: true
