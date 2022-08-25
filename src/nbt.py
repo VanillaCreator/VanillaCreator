@@ -1,5 +1,5 @@
 import utils
-def gen(obj: object) -> str:
+def gen(obj:object)->str:
     nbt=""
     obj_type = type(obj)
     if obj_type is str:
