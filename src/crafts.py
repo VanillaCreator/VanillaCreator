@@ -1,8 +1,5 @@
 import nbt, os, statics, ui, utils
-
 coords = {"in": "~ ~ ~", "on": "~ ~-1 ~", "under": "~ ~1 ~"}
-
-
 class TypeException(Exception):
 
     def __init__(self, trans_key) -> None:
