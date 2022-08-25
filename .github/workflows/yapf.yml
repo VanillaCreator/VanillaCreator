@@ -13,9 +13,9 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v2
       - name: format with yapf
-        uses: AlexanderMelde/yapf-action@master
+        uses: diegovalenzuelaiturra/yapf-action@master
         with:
-          args: ./src -rip
+          args: -rip ./src
       - name: commit changes
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
