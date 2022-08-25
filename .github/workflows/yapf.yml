@@ -15,7 +15,7 @@ jobs:
       - name: format with yapf
         uses: AlexanderMelde/yapf-action@master
         with:
-          args: -rip ./src
+          args: -r -i -p ./src
       - name: commit changes
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
