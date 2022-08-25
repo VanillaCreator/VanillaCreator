@@ -1,6 +1,9 @@
 import utils
 
-
+# minecraft你要用json就全用呀
+# 这种奇怪的nbt格式什么鬼
+# 有时还套整个json文件
+# 给我螺内酯啊啊啊
 def gen(obj: object) -> str:
     nbt = ""
     obj_type = type(obj)
