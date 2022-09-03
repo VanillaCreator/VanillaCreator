@@ -2,12 +2,11 @@ import os, project, sys, ui, utils, yaml
 
 
 def set_language(settings: dict) -> None:
-    lang = settings["lang"]
     if ui.menu("set_language", ("e", "c")) == "c":
-        lang = "zh_CN"
+        settings["lang"] = "zh_CN"
     else:
-        lang = "en_US"
-    ui.init(lang)
+        settings["lang"] = "en_US"
+    ui.init(settings["lang"])
 
 
 def set_workspace(settings: dict) -> None:
