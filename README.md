@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/VanillaCreator/VanillaCreator.github.io/main/static/logo.png)
+![logo](https://raw.githubusercontent.com/VanillaCreator/VanillaCreator/main/docs/static/logo.png)
 
 A minecraft datapack generator
 
